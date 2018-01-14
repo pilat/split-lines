@@ -1,0 +1,40 @@
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "script": "watch",
+            "isBackground": true,
+            "presentation": {
+                "reveal": "never"
+            },
+            "problemMatcher": [
+                {
+                    "owner": "babel",
+                    "severity": "error",
+                    "fileLocation": "relative",
+                    "pattern": [
+                        {
+                            "regexp": "^>>>>ERROR\\|\\|\\|(.+)\\|\\|\\|(.+)\\|\\|\\|(.+)\\|\\|\\|(.+)\\|\\|\\|(.+)$",
+                            "line": 4,
+                            "column": 5,
+                            "message": 3,
+                            "file": 2
+                        }                        
+                    ],
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".*START.*",
+                        "endsPattern": ".*END.*"
+                    }                
+                }
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
