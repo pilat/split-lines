@@ -2,7 +2,7 @@
     "name": "split-lines",
     "displayName": "Split Lines",
     "description": "Splitting Lines With String Literals",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "icon": "images/icon.png",
     "publisher": "brainfit",
     "author": {

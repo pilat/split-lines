@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-    <img src="https://github.com/pilat/split-lines/blob/master/images/icon.png?raw=true" alt="logo" width="150">
+    <img src="https://github.com/pilat/split-lines/blob/master/images/icon.png?raw=true" alt="logo" width="200">
   <br>
   Split Lines
   <br>
@@ -22,14 +22,13 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 ## Changelog
 
-### 0.0.1
+### 0.0.3
 
 -  First release. Support Python, JS and React JSX
 
 ---
 
 ## TODO:
-
 - Create tests
 - Support more languages
 - Support splitting not only string literals
