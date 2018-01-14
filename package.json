@@ -21,14 +21,12 @@
         "split",
         "trim",
         "newline",
-        "linebreak",
-        "python",
-        "javascript"
+        "linebreak"
     ],
     "repository": {
-        "url": "https://github.com/microsoft/vscode-docker.git"
+        "url": "https://github.com/pilat/split-lines.git"
     },
-    "homepage": "https://github.com/Microsoft/vscode-docker/blob/master/README.md",
+    "homepage": "https://github.com/pilat/split-lines/blob/master/README.md",
     "activationEvents": [
         "*"
     ],
@@ -38,7 +36,7 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
-        "compile": "babel src --out-dir out --source-maps --no-highlight-code",
+        "compile": "babel src --out-dir out --no-highlight-code",
         "watch": "node tools/babelwrap.js --watch src --out-dir out --source-maps --no-highlight-code",
         "test": "npm run compile && node ./node_modules/vscode/bin/test"
     },
