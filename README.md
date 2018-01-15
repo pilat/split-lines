@@ -7,7 +7,10 @@
   <br>
 </h1>
 
-<h4 align="center">Splitting Lines With String Literals</h4>
+[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version/brainfit.split-lines.svg)](https://marketplace.visualstudio.com/items?itemName=brainfit.split-lines) 
+[![Build Status](https://travis-ci.org/pilat/split-lines.svg?branch=master)](https://travis-ci.org/pilat/split-lines)
+
+## Splitting Lines With String Literals
 
 A Visual Studio Code extension allow split string literals, providing the correct syntax. Now supports **Python**, **JavaScript**. 
 
@@ -21,6 +24,10 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 
 ## Changelog
+
+### 0.0.4
+
+-  Added tests for Python and JS. JS now make idents
 
 ### 0.0.3
 

@@ -13,7 +13,7 @@ let textMateRegistry;
 let documents = new Map();  // [document.uri] -> DocumentParser instances
 
 
-export function activate(context) {
+export function activate(context) {    
     textMateRegistry = new tm.Registry(grammarLocator);
 
     for(let parserModule of parserModulesIterator())
@@ -33,7 +33,7 @@ async function openDocument(doc) {
         return;    
 
     try{
-        console.log('Load grammar for %s and find suitable parser', scopeName);
+        // console.log('Load grammar for %s and find suitable parser', scopeName);
         const grammar = await loadGrammar(scopeName);
         const parser = getSuitableParser(grammar);
         
@@ -43,13 +43,21 @@ async function openDocument(doc) {
     }
 }
 
-function changeDocument(event) {
+async function changeDocument(event) {
     const doc = documents.get(event.document.uri);
     if (!doc)
         return;
 
+    const editor = vscode.window.activeTextEditor;
     try {
-        doc.onChange(event);
+        for (let contentChange of event.contentChanges) {
+            let callback = doc.getChanges(event.document, contentChange);
+            if (callback) {                
+                editor.edit(editBuilder => {
+                    callback(editBuilder);                    
+                });
+            }
+        }
     }catch(err) {
         console.error(err);
     }
@@ -92,7 +100,7 @@ const grammarLocator = {
         const file = path.join(ext.extensionPath, ext.path);
         console.info(`Scope-info: found grammar for ${scopeName} at ${file}`);
         return file;
-	}
+    }
 };
 
 function loadGrammar(scopeName) {

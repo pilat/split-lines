@@ -19,12 +19,18 @@ export class JSDocumentParser extends DocumentParser {
         if (!startQuoteFragment)
             return;
         
+        let margin = 0;
         const openQuoteCharacter = startQuoteFragment.text;
-        return {isInString, openQuoteCharacter};
+        margin = startQuoteFragment.startIndex;        
+
+        return {isInString, openQuoteCharacter, margin};
     }
 
     edit(editBuilder, originalPosition, newPosition, result) {        
-        editBuilder.insert(originalPosition, result.openQuoteCharacter + ' +');        
+        editBuilder.insert(originalPosition, result.openQuoteCharacter + ' +');
+        
+        editBuilder.insert(newPosition, ' '.repeat(result.margin));
+
         editBuilder.insert(newPosition, result.openQuoteCharacter);    
     }
 }

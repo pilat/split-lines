@@ -5,25 +5,16 @@ import {LineFragment} from './line';
 
 export class DocumentParser {
     grammar = null;
-    lines = null;
 
     constructor(grammar) {
-        console.log('Document constructor');        
         this.grammar = grammar;
     }
 
-    async onChange(event) {
-        if (!event.contentChanges[0])
-            return;
-    
-        let contentChange = event.contentChanges[0],
-            doc = event.document;
-        
+    getChanges(doc, contentChange) {
         const insertedText = contentChange.text;
         
         if (!insertedText.startsWith('\n'))
             return;
-
                 
         // Restore document content before changes
         let originalPosition = contentChange.range.start;
@@ -33,39 +24,26 @@ export class DocumentParser {
         let rText = doc.getText(new vscode.Range(newPosition, new vscode.Position(doc.lineCount, 0)));
         let originalText = lText + rText;
         
-        // Load lines (restored document):
-        this.lines = originalText.split('\n');
+        // Parse fragments until need line
+        let resolveResult;
 
-        // Parse lines
-        let resolveResult = this._resolve(originalPosition);
+        let i;
+        let prevFragments = [];        
+        for(let f of this._getFragments(originalText, originalPosition.line)) {
+            if(f.lineIndex === originalPosition.line && f.startIndex <= originalPosition.character && 
+                originalPosition.character < f.endIndex) {
+                resolveResult = this.resolve(f, prevFragments);
+                break;
+            }            
+            prevFragments.push(f);
+        }
+        
         if (!resolveResult)
             return;
 
-        const editor = vscode.window.activeTextEditor;
-        editor.edit((editBuilder) => {
-            this.edit(editBuilder, originalPosition, newPosition, resolveResult);
-        }).then(() => {
-            // pass
-        });
-    }
-
-    _resolve(position) {
-        const lineIdx = position.line;
-        console.time('Parse');
-        const fragments = this._getFragments(lineIdx);
-        console.timeEnd('Parse');
-
-        let i;
-        let checkedFragments = [];        
-        for(let f of fragments) {
-            if(f.lineIndex === lineIdx && f.startIndex <= position.character && position.character < f.endIndex) {
-                let result = this.resolve(f, checkedFragments);
-                console.log(JSON.stringify(result));
-                return result;
-            }
-            
-            checkedFragments.push(f);
-        }
+        let t = this;
+        return (editBuilder) => 
+            t.edit(editBuilder, originalPosition, newPosition, resolveResult);
     }
 
     resolve(fragment, prevFragments){
@@ -76,14 +54,16 @@ export class DocumentParser {
         console.warn('Not implement');
     }
 
-    _getFragments(targetLine) {
+    _getFragments(text, targetLine) {
+        const documentLines = text.split('\n');
+
         let lineIdx;
         let prevState = null;
         let fragments = [];
 
         // Scan document from start to targetLine
-        for(lineIdx = 0; lineIdx < this.lines.length; ++lineIdx) {
-            const line = this.lines[lineIdx]; // this.lineAt(lineIdx);
+        for(lineIdx = 0; lineIdx < documentLines.length; ++lineIdx) {
+            const line = documentLines[lineIdx]; // this.lineAt(lineIdx);
             const tokens = this.grammar.tokenizeLine(line, prevState);            
 
             if (!prevState || prevState.ruleId === 1)

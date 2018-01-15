@@ -22,6 +22,7 @@ export class MagicPythonDocumentParser extends DocumentParser {
         // backward search for detect quote character(s)
         let openQuoteCharacter = null;
         let margin = 0;
+        let marginCorrection = 0;
         const startQuoteFragment = [...prevFragments].reverse().find(i => 
             i.isScope('punctuation.definition.string.begin.python'));
         
@@ -32,13 +33,13 @@ export class MagicPythonDocumentParser extends DocumentParser {
             // Detect start offset to correct margin (e.g. vscode made margin)
             let firstFragmentOnLine = prevFragments.filter(i => i.lineIndex === fragment.lineIndex)[0];
             if (firstFragmentOnLine && firstFragmentOnLine.text.match(/^\s+$/))
-                margin -= firstFragmentOnLine.text.length;
+                marginCorrection = firstFragmentOnLine.text.length;
         }                        
         
         if (!openQuoteCharacter)
             return;
         
-        return {isInString, isInList, openQuoteCharacter, margin};
+        return {isInString, isInList, openQuoteCharacter, margin, marginCorrection};
     }
 
     edit(editBuilder, originalPosition, newPosition, result) {
@@ -48,7 +49,9 @@ export class MagicPythonDocumentParser extends DocumentParser {
             editBuilder.insert(originalPosition, result.openQuoteCharacter);
         }
         
-        editBuilder.insert(newPosition, ' '.repeat(result.margin));
+        // When VS Code make self ident we're use marginCorrection. 
+        editBuilder.insert(newPosition, ' '.repeat(result.margin + 
+            (newPosition.character != 0 ? result.marginCorrection : 0)));
         editBuilder.insert(newPosition, result.openQuoteCharacter);    
     }
 }
