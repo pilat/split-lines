@@ -98,7 +98,7 @@ const grammarLocator = {
 
         const ext = matchingLanguages[0];
         const file = path.join(ext.extensionPath, ext.path);
-        console.info(`Scope-info: found grammar for ${scopeName} at ${file}`);
+        //console.info(`Found grammar for ${scopeName} at ${file}`);
         return file;
     }
 };
