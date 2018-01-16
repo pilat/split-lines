@@ -79,6 +79,7 @@ export class DocumentParser {
 
             if (lineIdx === targetLine)
                 return fragments;
-        }            
+        }
+        return [];
     }
 }

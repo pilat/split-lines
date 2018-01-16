@@ -25,6 +25,10 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 ## Changelog
 
+### 0.0.5
+
+-  Fix margin issue
+
 ### 0.0.4
 
 -  Added tests for Python and JS. JS now make idents

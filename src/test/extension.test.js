@@ -102,6 +102,17 @@ return ('Long text')`.substr(1),
             expected: `
 return ('Long '
         'text')`.substr(1)
+        },
+        {
+            name: 'Test broken 1',
+            text: `
+message = 'Hello! This message is too long to fit in one line. ' \\
+          'To break it, you can press Enter right in the middle.'`.substr(1),
+          enterPos: [1, 57],
+          expected: `
+message = 'Hello! This message is too long to fit in one line. ' \\
+          'To break it, you can press Enter right in the ' \\
+          'middle.'`.substr(1),
         }
     ],
 

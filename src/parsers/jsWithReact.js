@@ -29,7 +29,10 @@ export class JSDocumentParser extends DocumentParser {
     edit(editBuilder, originalPosition, newPosition, result) {        
         editBuilder.insert(originalPosition, result.openQuoteCharacter + ' +');
         
-        editBuilder.insert(newPosition, ' '.repeat(result.margin));
+        // Consider VS Code made margin
+        let realMargin = result.margin - newPosition.character;
+        if (realMargin > 0)
+            editBuilder.insert(newPosition, ' '.repeat(realMargin));
 
         editBuilder.insert(newPosition, result.openQuoteCharacter);    
     }
