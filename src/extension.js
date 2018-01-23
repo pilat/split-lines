@@ -33,14 +33,11 @@ async function openDocument(doc) {
         return;    
 
     try{
-        // console.log('Load grammar for %s and find suitable parser', scopeName);
         const grammar = await loadGrammar(scopeName);
         const parser = getSuitableParser(grammar);
         
         documents.set(doc.uri, parser);
-    }catch(err) {
-        console.error(err);
-    }
+    }catch { }
 }
 
 async function changeDocument(event) {
@@ -58,9 +55,7 @@ async function changeDocument(event) {
                 });
             }
         }
-    }catch(err) {
-        console.error(err);
-    }
+    }catch { }
 }
 
 function closeDocument(doc) {
@@ -78,10 +73,9 @@ function getLanguageScopeName(languageId) {
         const matchingLanguages = languages.filter(g => g.language === languageId);
       
         if(matchingLanguages.length > 0) {
-            // console.info(`Mapping language ${languageId} to initial scope ${matchingLanguages[0].scopeName}`);
             return matchingLanguages[0].scopeName;
         }
-    } catch(err) { }
+    } catch() { }
     return undefined;
 }
 
@@ -98,7 +92,6 @@ const grammarLocator = {
 
         const ext = matchingLanguages[0];
         const file = path.join(ext.extensionPath, ext.path);
-        //console.info(`Found grammar for ${scopeName} at ${file}`);
         return file;
     }
 };

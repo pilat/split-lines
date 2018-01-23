@@ -46,13 +46,9 @@ export class DocumentParser {
             t.edit(editBuilder, originalPosition, newPosition, resolveResult);
     }
 
-    resolve(fragment, prevFragments){
-        console.warn('Not implement');
-    }
+    resolve(fragment, prevFragments) { }
 
-    edit(editBuilder, originalPosition, newPosition, result) {
-        console.warn('Not implement');
-    }
+    edit(editBuilder, originalPosition, newPosition, result) { }
 
     _getFragments(text, targetLine) {
         const documentLines = text.split('\n');
