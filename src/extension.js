@@ -37,7 +37,7 @@ async function openDocument(doc) {
         const parser = getSuitableParser(grammar);
         
         documents.set(doc.uri, parser);
-    }catch { }
+    }catch(e) { }
 }
 
 async function changeDocument(event) {
@@ -55,7 +55,7 @@ async function changeDocument(event) {
                 });
             }
         }
-    }catch { }
+    }catch(e) { }
 }
 
 function closeDocument(doc) {
@@ -75,7 +75,7 @@ function getLanguageScopeName(languageId) {
         if(matchingLanguages.length > 0) {
             return matchingLanguages[0].scopeName;
         }
-    } catch() { }
+    } catch(e) { }
     return undefined;
 }
 
