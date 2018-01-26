@@ -179,6 +179,38 @@ function render() {
                             'World!');
 }`.substr(1)
         }
+    ],
+
+    ts: [  // TypeScript
+        {
+            name: 'Basic',
+            text: 'let a:string = "Blabl bla"',
+            enterPos: [0, 22],
+            expected: `
+let a:string = "Blabl " +
+               "bla"`.substr(1)
+        },
+        {
+            name: 'Multiline in function',
+            text: `
+class Hello {
+    public test() {
+        this.method('Hello, ' +
+                    'World and newline');
+    }
+    private method(s: string) {}
+}`.substr(1),
+            enterPos: [3, 31],
+            expected: `
+class Hello {
+    public test() {
+        this.method('Hello, ' +
+                    'World and ' +
+                    'newline');
+    }
+    private method(s: string) {}
+}`.substr(1)
+        }
     ]
 };
 

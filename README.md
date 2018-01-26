@@ -12,22 +12,25 @@
 
 ## Splitting Lines With String Literals
 
-A Visual Studio Code extension allow split string literals, providing the correct syntax. Now supports **Python**, **JavaScript**. 
+A Visual Studio Code extension allow split string literals, providing the correct syntax. Now supports **Python**, **TypeScript**, **JavaScript**.
 
-![Demo](https://github.com/pilat/split-lines/blob/master/images/demo.gif?raw=true)
+
+![Demo](https://github.com/pilat/split-lines/blob/master/images/demo-typescript.gif?raw=true)
+
+![Demo](https://github.com/pilat/split-lines/blob/master/images/demo-python.gif?raw=true)
+
 
 
 **Supported features (Python)**
 * Consider current context (string located in list or parentheses)
-* Makes indents
 
 
 
 ## Changelog
 
-### 0.0.5
+### 0.0.7
 
--  Fix margin issue
+-  TypeScript support
 
 ### 0.0.4
 
@@ -40,9 +43,7 @@ A Visual Studio Code extension allow split string literals, providing the correc
 ---
 
 ## TODO:
-- Create tests
 - Support more languages
-- Support splitting not only string literals
 
 
 ## License 
