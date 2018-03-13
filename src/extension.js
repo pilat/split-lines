@@ -6,7 +6,12 @@ import {DocumentParser} from './document';
 const PARSERS_DIR = path.join(__dirname, 'parsers');
 
 // Use VS Code TextMate https://github.com/Microsoft/vscode/issues/580
-const tm = require(path.join(require.main.filename, '../../node_modules/vscode-textmate/release/main.js'));
+let vsCodeNodePath = path.join(require.main.filename, '../../node_modules');
+if (!fs.existsSync(vsCodeNodePath)) {
+    vsCodeNodePath += '.asar';
+}
+
+const tm = require(path.join(vsCodeNodePath, 'vscode-textmate', 'release', 'main.js'));
 
 let availableParsers = {};
 let textMateRegistry;

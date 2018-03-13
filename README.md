@@ -14,6 +14,8 @@
 
 A Visual Studio Code extension allow split string literals, providing the correct syntax. Now supports **Python**, **TypeScript**, **JavaScript**.
 
+### You may press <kbd>Enter</kbd> when you write string value and string will be split!
+
 
 ![Demo](https://github.com/pilat/split-lines/blob/master/images/demo-typescript.gif?raw=true)
 
@@ -27,6 +29,10 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 
 ## Changelog
+
+### 0.0.8
+
+-  Fix issue with VSCode 1.21
 
 ### 0.0.7
 
