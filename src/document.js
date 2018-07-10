@@ -60,7 +60,7 @@ export class DocumentParser {
         // Scan document from start to targetLine
         for(lineIdx = 0; lineIdx < documentLines.length; ++lineIdx) {
             const line = documentLines[lineIdx]; // this.lineAt(lineIdx);
-            const tokens = this.grammar.tokenizeLine(line, prevState);            
+            const tokens = this.grammar.tokenizeLine(line, prevState);
 
             if (!prevState || prevState.ruleId === 1)
                 fragments = [];

@@ -8,18 +8,32 @@ export class MagicPythonDocumentParser extends DocumentParser {
     }
 
     resolve(fragment, prevFragments){
-        const isInString = fragment.hasScope('string.quoted.single.python') && 
+        const isInString = (fragment.hasScope('string.quoted.single.python') ||
+            fragment.hasScope('string.quoted.docstring.single.python')) && 
             fragment.scopes[fragment.scopes.length-1] !== 'punctuation.definition.string.begin.python';
 
         if (!isInString)
             return;
         
-        const isInList = !!prevFragments.find(i => 
-            i.hasScope('punctuation.parenthesis.begin.python') || 
-            i.hasScope('punctuation.definition.list.begin.python') || 
-            i.hasScope('punctuation.definition.arguments.begin.python'));
-
-        // backward search for detect quote character(s)
+        let isInList = false;
+        // Scan backward. When we found opened fragment, then we're in list 
+        // but when we detected closed, then skip additional checking):
+        for(let i=prevFragments.length-1;i>=0;i--) {
+            const frag = prevFragments[i];
+            if (frag.hasScope('punctuation.parenthesis.begin.python') || 
+                frag.hasScope('punctuation.definition.list.begin.python') || 
+                frag.hasScope('punctuation.definition.arguments.begin.python')) {
+                isInList = true;
+                break;
+            } else if (frag.hasScope('punctuation.parenthesis.end.python') || 
+                frag.hasScope('punctuation.definition.list.end.python') || 
+                frag.hasScope('punctuation.definition.arguments.end.python')) {
+                    break;
+                }
+        }
+        
+        
+        // backward search adn detect quote character(s)
         let openQuoteCharacter = null;
         let margin = 0;
         const startQuoteFragment = [...prevFragments].reverse().find(i => 
@@ -31,7 +45,7 @@ export class MagicPythonDocumentParser extends DocumentParser {
 
             // Detect start offset to correct margin (e.g. vscode made margin)
             let firstFragmentOnLine = prevFragments.filter(i => i.lineIndex === fragment.lineIndex)[0];
-        }                        
+        }
         
         if (!openQuoteCharacter)
             return;
@@ -41,7 +55,7 @@ export class MagicPythonDocumentParser extends DocumentParser {
 
     edit(editBuilder, originalPosition, newPosition, result) {
         if (!result.isInList) {
-            editBuilder.insert(originalPosition, result.openQuoteCharacter + ' \\');            
+            editBuilder.insert(originalPosition, result.openQuoteCharacter + ' \\');
         } else {
             editBuilder.insert(originalPosition, result.openQuoteCharacter);
         }
@@ -51,6 +65,6 @@ export class MagicPythonDocumentParser extends DocumentParser {
         if (realMargin > 0)
             editBuilder.insert(newPosition, ' '.repeat(realMargin));
 
-        editBuilder.insert(newPosition, result.openQuoteCharacter);    
+        editBuilder.insert(newPosition, result.openQuoteCharacter);
     }
 }

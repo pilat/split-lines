@@ -1,29 +1,19 @@
 import vscode from 'vscode';
-import path from 'path';
-import fs from 'fs';
+
 import {DocumentParser} from './document';
+import { getTextMateRegistry } from './vsctm';
+import { getAvailableParsers } from './parsers';
 
-const PARSERS_DIR = path.join(__dirname, 'parsers');
-
-// Use VS Code TextMate https://github.com/Microsoft/vscode/issues/580
-let vsCodeNodePath = path.join(require.main.filename, '../../node_modules');
-if (!fs.existsSync(vsCodeNodePath)) {
-    vsCodeNodePath += '.asar';
-}
-
-const tm = require(path.join(vsCodeNodePath, 'vscode-textmate', 'release', 'main.js'));
 
 let availableParsers = {};
 let textMateRegistry;
 let documents = new Map();  // [document.uri] -> DocumentParser instances
 
 
-export function activate(context) {    
-    textMateRegistry = new tm.Registry(grammarLocator);
+export function activate(context) {
+    textMateRegistry = getTextMateRegistry()
+    availableParsers = getAvailableParsers();
 
-    for(let parserModule of parserModulesIterator())
-        availableParsers = {...availableParsers, ...parserModule};
-        
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(openDocument));
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(changeDocument));
     context.subscriptions.push(vscode.workspace.onDidCloseTextDocument(closeDocument));
@@ -35,14 +25,16 @@ export function activate(context) {
 async function openDocument(doc) {
     const scopeName = getLanguageScopeName(doc.languageId);
     if (!scopeName)
-        return;    
+        return;
 
     try{
-        const grammar = await loadGrammar(scopeName);
+        const grammar = await textMateRegistry.loadGrammar(scopeName);
         const parser = getSuitableParser(grammar);
         
         documents.set(doc.uri, parser);
-    }catch(e) { }
+    }catch(e) {
+        console.warn(e);
+    }
 }
 
 async function changeDocument(event) {
@@ -54,9 +46,9 @@ async function changeDocument(event) {
     try {
         for (let contentChange of event.contentChanges) {
             let callback = doc.getChanges(event.document, contentChange);
-            if (callback) {                
+            if (callback) {
                 editor.edit(editBuilder => {
-                    callback(editBuilder);                    
+                    callback(editBuilder);
                 });
             }
         }
@@ -84,45 +76,6 @@ function getLanguageScopeName(languageId) {
     return undefined;
 }
 
-const grammarLocator = {
-    getFilePath: function (scopeName) {
-        const grammars =
-            vscode.extensions.all
-            .filter(x => x.packageJSON && x.packageJSON.contributes && x.packageJSON.contributes.grammars)
-            .reduce((a,b) => [...a, ...(b.packageJSON).contributes.grammars.map(x => Object.assign({extensionPath: b.extensionPath}, x))], []);
-        
-        const matchingLanguages = grammars.filter(g => g.scopeName === scopeName);
-        if(matchingLanguages.length === 0)
-            return null;
-
-        const ext = matchingLanguages[0];
-        const file = path.join(ext.extensionPath, ext.path);
-        return file;
-    }
-};
-
-function loadGrammar(scopeName) {
-    return new Promise((resolve,reject) => {
-        try {
-            textMateRegistry.loadGrammar(scopeName, (err, grammar) => {
-                if(err)
-                    reject(err)
-                else
-                    resolve(grammar);
-            })
-        } catch(err) {
-            reject(err);
-        }
-    });
-}
-
-function* parserModulesIterator() {
-    for (let file of fs.readdirSync(PARSERS_DIR)) {
-        if (file.match(/\.js$/))
-            yield require('./parsers/' + file);
-    }
-}
-
 function getSuitableParser(grammar) {
     for (let parserName in availableParsers) {
         let parserModule = availableParsers[parserName];
@@ -133,7 +86,7 @@ function getSuitableParser(grammar) {
 }
 
 
-export function deactivate() {    
+export function deactivate() {
     textMateRegistry = null;
     availableParsers = {};
     documents.clear();

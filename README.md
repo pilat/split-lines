@@ -30,6 +30,10 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 ## Changelog
 
+### 0.0.9
+
+-  Fix issue with VSCode > 1.24 
+
 ### 0.0.8
 
 -  Fix issue with VSCode 1.21

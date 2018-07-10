@@ -18,18 +18,18 @@ export class JSDocumentParser extends DocumentParser {
 
         // backward search for detect quote character(s)
         const startQuoteFragment = [...prevFragments].reverse().find(i => 
-            i.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.ts)$/));        
+            i.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.ts)$/));
         if (!startQuoteFragment)
             return;
         
         let margin = 0;
         const openQuoteCharacter = startQuoteFragment.text;
-        margin = startQuoteFragment.startIndex;        
+        margin = startQuoteFragment.startIndex;
 
         return {isInString, openQuoteCharacter, margin};
     }
 
-    edit(editBuilder, originalPosition, newPosition, result) {        
+    edit(editBuilder, originalPosition, newPosition, result) {
         editBuilder.insert(originalPosition, result.openQuoteCharacter + ' +');
         
         // Consider VS Code made margin
@@ -37,6 +37,6 @@ export class JSDocumentParser extends DocumentParser {
         if (realMargin > 0)
             editBuilder.insert(newPosition, ' '.repeat(realMargin));
 
-        editBuilder.insert(newPosition, result.openQuoteCharacter);    
+        editBuilder.insert(newPosition, result.openQuoteCharacter);
     }
 }

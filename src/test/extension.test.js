@@ -223,7 +223,7 @@ suite("Extension Tests", () => {
                 await myExtension.activate();
 
                 const file = await createRandomFile(testCase.text, fileType);
-                const doc = await vscode.workspace.openTextDocument(file);            
+                const doc = await vscode.workspace.openTextDocument(file);
                 const ed = await vscode.window.showTextDocument(doc);
 
                 await ed.edit(builder => {
