@@ -2,7 +2,7 @@
     "name": "split-lines",
     "displayName": "Split Lines",
     "description": "Splitting Lines With String Literals",
-    "version": "0.0.11",
+    "version": "0.0.12",
     "icon": "images/icon.png",
     "publisher": "brainfit",
     "author": {
@@ -13,7 +13,7 @@
         "vscode": "^1.16.1"
     },
     "categories": [
-        "Languages",
+        "Programming Languages",
         "Formatters",
         "Keymaps",
         "Other"

@@ -30,6 +30,10 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 ## Changelog
 
+### 0.0.12
+
+-  TypeScriptReact support (*.tsx)
+
 ### 0.0.11
 
 -  Fix issue with VSCode > 1.24 

@@ -4,21 +4,23 @@ import { DocumentParser } from "../document";
 
 export class JSDocumentParser extends DocumentParser {
     static probe(grammar) {
-        return grammar._grammar.name === 'JavaScript (with React support)' || grammar._grammar.name === 'TypeScript'
+        const suitable = ['JavaScript (with React support)', 'TypeScript', 'TypeScriptReact']
+
+        return suitable.indexOf(grammar._grammar.name) !== -1
     }
 
     resolve(fragment, prevFragments){
-        const isInString = fragment.hasScope(/^string\.quoted\.(single|double)(\.js(\.jsx)?|\.ts)$/);
+        const isInString = fragment.hasScope(/^string\.quoted\.(single|double)(\.js(\.jsx)?|\.tsx?)$/);
         
         if (!isInString)
             return;
         
-        if (fragment.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.ts)$/))
+        if (fragment.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.tsx?)$/))
             return;
 
         // backward search for detect quote character(s)
         const startQuoteFragment = [...prevFragments].reverse().find(i => 
-            i.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.ts)$/));
+            i.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.tsx?)$/));
         if (!startQuoteFragment)
             return;
         
