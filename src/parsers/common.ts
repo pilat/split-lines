@@ -41,10 +41,14 @@ export abstract class DocumentParser {
     getChanges(doc: TextDocument, contentChange: TextDocumentContentChangeEvent) {
         const insertedText = contentChange.text;
         
-        if (!insertedText.startsWith('\n')) {
+        if (insertedText.length < 1) {
             return;
         }
-                
+
+        if (!insertedText.startsWith('\n') && insertedText.charCodeAt(0) !== 13) {
+            return;
+        }
+
         // Restore document content before changes
         let originalPosition:Position = contentChange.range.start;
         let newPosition = doc.positionAt(  doc.offsetAt(originalPosition) + insertedText.length   );
