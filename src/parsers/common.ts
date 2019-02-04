@@ -33,6 +33,8 @@ export class LineFragment {
 }
 
 export abstract class DocumentParser {
+    readonly NEWLINE_REGEX = /\r\n|\r|\n/;
+
     constructor(private grammar: IGrammar) { }
 
     abstract resolve(fragment:LineFragment, prevFragments:LineFragment[]): any;
@@ -45,7 +47,7 @@ export abstract class DocumentParser {
             return;
         }
 
-        if (!insertedText.startsWith('\n') && insertedText.charCodeAt(0) !== 13) {
+        if (!insertedText.startsWith('\n') && !insertedText.startsWith('\r\n')) {
             return;
         }
 
@@ -82,7 +84,7 @@ export abstract class DocumentParser {
     }
 
     private getFragments(text: string, targetLine: number): LineFragment[] {
-        const documentLines:string[] = text.split('\n');
+        const documentLines:string[] = text.split(this.NEWLINE_REGEX);
 
         let t:IToken;
         let lineIdx:number;

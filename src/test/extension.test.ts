@@ -178,7 +178,31 @@ function render() {
     return method('dsadas', 'Hello, ' +
                             'World!');
 }`.substr(1)
-        }
+        },
+        {
+            name: 'Input CRLF in LF document',
+            text: 'In a galaxy far far away',
+            enterPos: [0, 12], 
+            input: '\r\n',  // unusual input
+            expected: 'In a galaxy \nfar far away'
+        },
+        {
+            name: 'Input CRLF in CRLF document',
+            text: 'In a galaxy far far away',
+            enterPos: [0, 12], 
+            input: '\r\n',
+            eol: vscode.EndOfLine.CRLF,
+            expected: 'In a galaxy \r\nfar far away'
+        },
+        {
+            name: 'Input LF in CRLF document',
+            text: 'In a galaxy far far away',
+            enterPos: [0, 12], 
+            input: '\n',
+            eol: vscode.EndOfLine.CRLF,
+            expected: 'In a galaxy \r\nfar far away'
+        },
+        // TODO: Document with tabs. 
     ],
 
     jsx: [  // JS
@@ -236,24 +260,18 @@ suite("Extension Tests", () => {
 
                 let myProvider:SplitLinesProvider = myExtension.exports.getProvider()
                 myProvider.editPromises = [];
-                // SplitLinesProvider.debugTrace = true;
-                // SplitLinesProvider.debugPromises = [];
-                // SplitLinesProvider.testCallback = () => {
-                //     _resolve();
-                // }
 
                 const file = await createRandomFile(testCase.text, fileType);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const ed = await vscode.window.showTextDocument(doc);
 
-                // Wait some time
-                // await delay(1000);
+                const input = testCase.input || '\n';
                 await ed.edit(builder => {
-                    builder.insert(new vscode.Position(testCase.enterPos[0], testCase.enterPos[1]), '\n');
+                    builder.setEndOfLine(testCase.eol || vscode.EndOfLine.LF);
+                    builder.insert(new vscode.Position(testCase.enterPos[0], testCase.enterPos[1]), input);
                 })
                 await Promise.all(myProvider.editPromises);
-                // await delay(1000);
-                
+
                 // await doc.save();  // Force onDidChangeTextDocument
                 
                 let actualText = doc.getText();

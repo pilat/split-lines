@@ -30,6 +30,10 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 ## Changelog
 
+### 0.0.15
+
+-  Issue with CRLF was fixed
+
 ### 0.0.13
 
 -  Code was refactored to TS
