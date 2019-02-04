@@ -4,3 +4,4 @@ out/test/**
 out/**/*.map
 src/**
 .gitignore
+test/**

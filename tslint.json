@@ -1,0 +1,18 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "rules": {
+        "no-unused-expression": true,
+        "no-duplicate-variable": true,
+        "curly": true,
+        "class-name": true,
+        "semicolon": true,
+        "triple-equals": true,
+        "quotemark": [true, "single"],
+        "ordered-imports": false,
+        "no-consecutive-blank-lines": [true, 2],
+        "object-literal-sort-keys": false
+    }
+}

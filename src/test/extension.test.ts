@@ -1,10 +1,10 @@
+import { SplitLinesProvider } from './../provider';
 import * as assert from 'assert';
 import * as vscode from 'vscode';
-import { workspace, window, Position, Range, commands, TextEditor, TextDocument, TextEditorCursorStyle, TextEditorLineNumbersStyle, SnippetString, Selection } from 'vscode';
-import { createRandomFile, deleteFile } from './utils';
+import { createRandomFile, deleteFile } from './common';
 
 
-const testCases = {
+const testCases:any = {
     py: [ // Python
         {
             name: 'Test with fileType',
@@ -181,6 +181,18 @@ function render() {
         }
     ],
 
+    jsx: [  // JS
+        {
+            name: 'Basic',
+            text: 'let component = <ReactComponent value1="The string one two" />;',
+            enterPos: [0, 51],
+            expected: `
+let component = <ReactComponent value1="The string " +
+                                       "one two" />;`.substr(1)
+        },
+    ],
+
+
     ts: [  // TypeScript
         {
             name: 'Basic',
@@ -222,15 +234,27 @@ suite("Extension Tests", () => {
                 const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
                 await myExtension.activate();
 
+                let myProvider:SplitLinesProvider = myExtension.exports.getProvider()
+                myProvider.editPromises = [];
+                // SplitLinesProvider.debugTrace = true;
+                // SplitLinesProvider.debugPromises = [];
+                // SplitLinesProvider.testCallback = () => {
+                //     _resolve();
+                // }
+
                 const file = await createRandomFile(testCase.text, fileType);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const ed = await vscode.window.showTextDocument(doc);
 
+                // Wait some time
+                // await delay(1000);
                 await ed.edit(builder => {
-                    builder.insert(new Position(testCase.enterPos[0], testCase.enterPos[1]), '\n');
-                })            
+                    builder.insert(new vscode.Position(testCase.enterPos[0], testCase.enterPos[1]), '\n');
+                })
+                await Promise.all(myProvider.editPromises);
+                // await delay(1000);
                 
-                await doc.save();  // Force onDidChangeTextDocument
+                // await doc.save();  // Force onDidChangeTextDocument
                 
                 let actualText = doc.getText();
                 assert.equal(actualText, testCase.expected);
