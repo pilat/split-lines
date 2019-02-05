@@ -1,6 +1,7 @@
+import { ISimpleChangeEvent, NEWLINE_REGEX, IParserResult } from './../types';
 import { IGrammar, IToken, StackElement } from 'vscode-textmate';
 
-import { TextDocument, TextDocumentContentChangeEvent, Range, Position, TextEditorEdit } from 'vscode';
+import { TextEditorEdit } from 'vscode';
 
 
 export class LineFragment {
@@ -33,34 +34,18 @@ export class LineFragment {
 }
 
 export abstract class DocumentParser {
-    readonly NEWLINE_REGEX = /\r\n|\r|\n/;
-
     constructor(private grammar: IGrammar) { }
 
     abstract resolve(fragment:LineFragment, prevFragments:LineFragment[]): any;
-    abstract edit(editBuilder:TextEditorEdit, originalPosition:Position, newPosition:Position, result: any): void;
+    // abstract edit(editBuilder:TextEditorEdit, originalPosition:Position, newPosition:Position, result: any): void;
+    abstract edit(editBuilder:TextEditorEdit, item:IParserResult): number;
 
-    getChanges(doc: TextDocument, contentChange: TextDocumentContentChangeEvent) {
-        const insertedText = contentChange.text;
-        
-        if (insertedText.length < 1) {
-            return;
-        }
-
-        if (!insertedText.startsWith('\n') && !insertedText.startsWith('\r\n')) {
-            return;
-        }
-
-        // Restore document content before changes
-        let originalPosition:Position = contentChange.range.start;
-        let newPosition = doc.positionAt(  doc.offsetAt(originalPosition) + insertedText.length   );
-        
-        let lText = doc.getText(new Range(new Position(0, 0), originalPosition));
-        let rText = doc.getText(new Range(newPosition, new Position(doc.lineCount, 0)));
-        let originalText:string = lText + rText;
-        
+    // getChanges(doc: TextDocument, contentChange: TextDocumentContentChangeEvent) {
+    getChange(originalText:string, event: ISimpleChangeEvent) {
         // Parse fragments until need line
-        let resolveResult:any;
+        const originalPosition = event.originalPosition;
+        // const newPosition = event.newPosition;
+        let resolveResult:any = null;
 
         let f:LineFragment;
         let prevFragments:LineFragment[] = [];
@@ -72,19 +57,12 @@ export abstract class DocumentParser {
             }            
             prevFragments.push(f);
         }
-        
-        if (!resolveResult) {
-            return;
-        }
 
-        let t = this;
-        return (editBuilder:TextEditorEdit) => {
-            t.edit(editBuilder, originalPosition, newPosition, resolveResult);
-        }
+        return resolveResult;
     }
 
     private getFragments(text: string, targetLine: number): LineFragment[] {
-        const documentLines:string[] = text.split(this.NEWLINE_REGEX);
+        const documentLines:string[] = text.split(NEWLINE_REGEX);
 
         let t:IToken;
         let lineIdx:number;

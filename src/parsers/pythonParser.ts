@@ -1,5 +1,6 @@
+import { IParserResult } from './../types';
 import { DocumentParser, LineFragment } from './common';
-import { Position, TextEditorEdit } from 'vscode';
+import { TextEditorEdit } from 'vscode';
 
 
 interface IPythonResolveResult {
@@ -60,7 +61,11 @@ export class MagicPythonDocumentParser extends DocumentParser {
         return {isInString, isInList, openQuoteCharacter, margin};
     }
 
-    public edit(editBuilder:TextEditorEdit, originalPosition:Position, newPosition:Position, result:IPythonResolveResult): void {
+    // public edit(editBuilder:TextEditorEdit, originalPosition:Position, newPosition:Position, result:IPythonResolveResult): void {
+    public edit(editBuilder:TextEditorEdit, item:IParserResult): number {
+        const { originalPosition, newPosition } = item.event;
+        const result = item.result as IPythonResolveResult;
+
         if (!result.isInList) {
             editBuilder.insert(originalPosition, result.openQuoteCharacter + ' \\');
         } else {
@@ -74,5 +79,6 @@ export class MagicPythonDocumentParser extends DocumentParser {
         }
 
         editBuilder.insert(newPosition, result.openQuoteCharacter);
+        return 0;
     }
 }

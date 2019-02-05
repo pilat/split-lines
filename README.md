@@ -32,6 +32,11 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 ### 0.0.15
 
+-  Bugfixes, multi-cursor support
+-  PHP experimental support
+
+### 0.0.15
+
 -  Issue with CRLF was fixed
 
 ### 0.0.13

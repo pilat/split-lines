@@ -50,5 +50,8 @@ export function deleteFile(file: vscode.Uri) {
 
 export function closeAllEditors() {
     return vscode.commands.executeCommand('workbench.action.closeAllEditors');
-
 }
+
+// export function sleep(ms:number) {
+//     return new Promise(resolve => setTimeout(resolve, ms));
+// }

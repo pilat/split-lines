@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { existsSync, readFile } from 'fs';
 import { IRawGrammar, IGrammar, Registry } from 'vscode-textmate';
-import * as semver from 'semver';
 
 /**
  * VS Code TextMate: https://github.com/Microsoft/vscode-textmate
@@ -77,57 +76,29 @@ export function getTextMateRegistry(): ITextMateRegistry {
     // summon black-magic. Otherwise we would have problems with oniguruma on each platform
     const vsctm:IVirtualVsctm = require(path.join(vsCodeNodePath, 'vscode-textmate', 'release', 'main.js'));
 
-    if (semver.gte(vscode.version, '1.24.0')) {
-        // The new way with vscode-textmate v. > 4
-        // @ts-ignore
-        return new vsctm.Registry({
-            loadGrammar: (scopeName: string) => {
-                const ext = grammarCollection.getByScope(scopeName);
-                return new Promise((resolve, reject) => {
-                    if (!ext) {
-                        reject();
-                        return;
+    // The new way with vscode-textmate v. > 4
+    // @ts-ignore
+    return new vsctm.Registry({
+        loadGrammar: (scopeName: string) => {
+            const ext = grammarCollection.getByScope(scopeName);
+            return new Promise((resolve, reject) => {
+                if (!ext) {
+                    reject();
+                    return;
+                }
+                readFile(ext.extPath, (error, content) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        try {
+                            const rawGrammar = vsctm.parseRawGrammar(content.toString(), ext.extPath);
+                            resolve(rawGrammar);
+                        } catch(e) {
+                            reject(e);
+                        }
                     }
-                    readFile(ext.extPath, (error, content) => {
-                        if (error) {
-                            reject(error);
-                        } else {
-                            try {
-                                const rawGrammar = vsctm.parseRawGrammar(content.toString(), ext.extPath);
-                                resolve(rawGrammar);
-                            } catch(e) {
-                                reject(e);
-                            }
-                        }
-                    });
                 });
-            }
-        });
-    } else {
-        // Old way:
-        const textMateRegistry = new vsctm.Registry({
-            // @ts-ignore
-            getFilePath: (scopeName: string) => {
-                const ext = grammarCollection.getByScope(scopeName);
-                if (ext) {
-                    return ext.extPath;
-                }
-            }
-        });
-        return {
-            loadGrammar: (scopeName) => new Promise((resolve, reject) => {
-                try {
-                    textMateRegistry.loadGrammar(scopeName, (err:any, grammar:IGrammar) => {
-                        if(err) {
-                            reject(err);
-                        } else {
-                            resolve(grammar);
-                        }
-                    });
-                } catch(err) {
-                    reject(err);
-                }
-            })
-        };
-    }
+            });
+        }
+    });
 }

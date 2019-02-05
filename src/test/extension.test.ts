@@ -5,6 +5,49 @@ import { createRandomFile, deleteFile } from './common';
 
 
 const testCases:any = {
+    php: [ // PHP
+        {
+            name: 'Test One',
+            text: `
+<?php
+
+$text="line1\\r\\n" .
+      "line2\\r\\n" .
+      "line3\\r\\n";
+`.substr(1),
+            enterPos: [2, 11],
+            expected: `
+<?php
+
+$text="line" .
+      "1\\r\\n" .
+      "line2\\r\\n" .
+      "line3\\r\\n";
+`.substr(1)
+        },
+        {
+            name: 'Test With cursor problem',
+            text: `
+<?php
+
+$text="line1+" .
+      "line2+" .
+      "line3+";
+`.substr(1),
+            enterPos: [3, 11],
+            expected: `
+<?php
+
+$text="line1+" .
+      "line" .
+      "2+" .
+      "line3+";
+`.substr(1)
+        }
+    ],
+
+
+
     py: [ // Python
         {
             name: 'Test with fileType',
@@ -202,7 +245,6 @@ function render() {
             eol: vscode.EndOfLine.CRLF,
             expected: 'In a galaxy \r\nfar far away'
         },
-        // TODO: Document with tabs. 
     ],
 
     jsx: [  // JS
@@ -252,14 +294,18 @@ class Hello {
 
     
 suite("Extension Tests", () => {
+    test('Base test', async () => {
+        // noop
+    });
+    
+    // todo: test with overtype plugins like this https://marketplace.visualstudio.com/items?itemName=adammaras.overtype
+
     for (let fileType in testCases) {
         for (let testCase of testCases[fileType]) {
             test(fileType + ': ' + testCase.name, async () => {
                 const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
                 await myExtension.activate();
-
-                let myProvider:SplitLinesProvider = myExtension.exports.getProvider()
-                myProvider.editPromises = [];
+                let myProvider:SplitLinesProvider = myExtension.exports.getProvider();
 
                 const file = await createRandomFile(testCase.text, fileType);
                 const doc = await vscode.workspace.openTextDocument(file);
@@ -270,7 +316,7 @@ suite("Extension Tests", () => {
                     builder.setEndOfLine(testCase.eol || vscode.EndOfLine.LF);
                     builder.insert(new vscode.Position(testCase.enterPos[0], testCase.enterPos[1]), input);
                 })
-                await Promise.all(myProvider.editPromises);
+                await myProvider.editPromise;
 
                 // await doc.save();  // Force onDidChangeTextDocument
                 
@@ -284,4 +330,46 @@ suite("Extension Tests", () => {
             });
         }
     }
+
+    for (let pos=10;pos<26;++pos){  // Check boundary issue
+        test(`Multicursor, boundaty check (offset {pos})`, async () => {
+        const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
+        await myExtension.activate();
+        let myProvider:SplitLinesProvider = myExtension.exports.getProvider();
+
+        const doc = await vscode.workspace.openTextDocument({language: 'javascript'});
+        const ed = await vscode.window.showTextDocument(doc);
+        const text = "var a=   '123456789012345';  // 0 - 20\nvar b=   '123456789012345';\n";
+        // const pos = 20;
+
+        await ed.edit(builder => {
+            //builder.setEndOfLine(testCase.eol || vscode.EndOfLine.LF);  // TODO: New line as a fixture
+            builder.insert(new vscode.Position(0, 0), text);
+        });
+        
+        // let newPosition = vscode.Position(0, 20);
+        // ed.selection = new vscode.Selection(0, 20, 0, 20);
+        // await sleep(150);
+        // vscode.commands.executeCommand('editor.action.insertCursorBelow');
+        // await sleep(150);
+
+        // Press enter
+        //vscode.workspace.applyEdit()
+        await ed.edit(builder => {
+            builder.insert(new vscode.Position(0, pos), "\n");
+            builder.insert(new vscode.Position(1, pos), "\n");
+        });
+        await myProvider.editPromise;
+
+        // expected value:
+        let actualText = doc.getText();
+
+        const expected = text.split('\n').map(line => 
+            line ? line.substr(0, pos) + "' +\n" + ' '.repeat(9) + "'" + line.substr(pos) : ''
+        ).join('\n')
+
+        assert.equal(actualText, expected);
+        });
+    }
+
 });

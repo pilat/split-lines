@@ -3,30 +3,30 @@ import { DocumentParser, LineFragment } from './common';
 import { TextEditorEdit } from 'vscode';
 
 
-interface IJSResolveResult {
+interface IPhpResolveResult {
     isInString: boolean;
     openQuoteCharacter: string;
     margin: number;
 }
 
 
-export class JSDocumentParser extends DocumentParser {
-    public static SUPPORTED_GRAMMARS = ['JavaScript (with React support)', 'TypeScript', 'TypeScriptReact'];
+export class PhpDocumentParser extends DocumentParser {
+    public static SUPPORTED_GRAMMARS = [/*'PHP Language Basics'*/, 'source.php'];  // atom's grammar hasn't name
 
-    public resolve(fragment:LineFragment, prevFragments:LineFragment[]): IJSResolveResult | undefined {
-        const isInString:boolean = fragment.hasScope(/^string\.quoted\.(single|double)(\.js(\.jsx)?|\.tsx?)$/);
+    public resolve(fragment:LineFragment, prevFragments:LineFragment[]): IPhpResolveResult | undefined {
+        const isInString:boolean = fragment.hasScope(/^string\.quoted\.(single|double)(\.php)$/);
         
         if (!isInString) {
             return;
         }
         
-        if (fragment.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.tsx?)$/)) {
+        if (fragment.isScope(/^punctuation\.definition\.string\.begin(\.php)$/)) {
             return;
         }
 
         // backward search for detect quote character(s)
         const startQuoteFragment = [...prevFragments].reverse().find(i => 
-            i.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.tsx?)$/));
+            i.isScope(/^punctuation\.definition\.string\.begin(\.php)$/));
         if (!startQuoteFragment) {
             return;
         }
@@ -40,9 +40,9 @@ export class JSDocumentParser extends DocumentParser {
 
     public edit(editBuilder:TextEditorEdit, item:IParserResult):number {
         const { originalPosition, newPosition } = item.event;
-        const result = item.result as IJSResolveResult;
+        const result = item.result as IPhpResolveResult;
 
-        editBuilder.insert(originalPosition, result.openQuoteCharacter + ' +');
+        editBuilder.insert(originalPosition, result.openQuoteCharacter + ' .');
         
         // Consider VS Code made margin
         let realMargin = result.margin - newPosition.character;

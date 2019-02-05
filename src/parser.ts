@@ -1,11 +1,13 @@
 import { DocumentParser } from './parsers/common';
-import { TextDocument, TextDocumentContentChangeEvent, TextEditor } from 'vscode';
+import { TextEditorEdit } from 'vscode';
 import { JSDocumentParser } from './parsers/jsParser';
 import { MagicPythonDocumentParser } from './parsers/pythonParser';
+import { PhpDocumentParser } from './parsers/phpParser';
 import { getTextMateRegistry, grammarCollection, ITextMateRegistry } from './text-mate';
+import { ISimpleChangeEvent, IParserResult } from './types';
 
 
-const PARSERS = [MagicPythonDocumentParser, JSDocumentParser];
+const PARSERS = [MagicPythonDocumentParser, JSDocumentParser, PhpDocumentParser];
 
 
 export enum ParserState {
@@ -47,7 +49,10 @@ export class LanguageParser {
         }
 
         LanguageParser.registry.loadGrammar(ext.scopeName).then((grammar) => {
-            const grammarName:string = (grammar as any)._grammar.name;
+            const grammarName:string = (grammar as any)._grammar.name || (grammar as any)._grammar.scopeName;
+            if (!grammarName) {
+                this.state = ParserState.ERROR_GRAMMAR_NOT_FOUND;
+            }
 
             if (!LanguageParser.parsers.has(grammarName)) {
                 this.state = ParserState.ERROR_PARSER_NOT_FOUND;
@@ -65,19 +70,15 @@ export class LanguageParser {
         return this.state === ParserState.READY;
     }
 
-    public editDocument(editor: TextEditor, doc: TextDocument,
-        contentChange: TextDocumentContentChangeEvent): Thenable<boolean> {
-        if (!this.parser) {
-            return;
+    public getChange(text:string, event: ISimpleChangeEvent): IParserResult {
+        return {
+            event: event,
+            result: this.parser.getChange(text, event)
         }
-
-        const callback:any = this.parser.getChanges(doc, contentChange);
-        if (!callback) {
-            return;
-        }
-
-        return editor.edit(editBuilder => {
-            callback(editBuilder);
-        });
     }
+
+    public applyChange(editBuilder:TextEditorEdit, item:IParserResult): number {
+        return this.parser.edit(editBuilder, item);
+    }
+
 }
