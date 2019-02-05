@@ -2,7 +2,7 @@
     "name": "split-lines",
     "displayName": "Split Lines",
     "description": "Splitting Lines With String Literals",
-    "version": "0.0.16",
+    "version": "0.0.17",
     "icon": "images/icon.png",
     "publisher": "brainfit",
     "author": {
@@ -17,16 +17,26 @@
         "url": "https://github.com/pilat/split-lines.git"
     },
     "categories": [
-        "Programming Languages",
         "Formatters",
-        "Keymaps",
         "Other"
     ],
     "keywords": [
         "split",
-        "trim",
+        "python",
         "newline",
-        "linebreak"
+        "javascript"
+    ],
+    "badges": [
+        {
+            "url": "https://vsmarketplacebadge.apphb.com/version/brainfit.split-lines.svg",
+            "href": "https://marketplace.visualstudio.com/items?itemName=brainfit.split-lines",
+            "description": "Visual Studio Marketplace"
+        },
+        {
+            "url": "https://travis-ci.org/pilat/split-lines.svg?branch=master",
+            "href": "https://travis-ci.org/pilat/split-lines",
+            "description": "Travis-CI"
+        }
     ],
     "homepage": "https://github.com/pilat/split-lines/blob/master/README.md",
     "activationEvents": [
@@ -58,6 +68,7 @@
         "vscode": "^1.1.16"
     },
     "dependencies": {
+        "vscode-extension-telemetry": "^0.1.1",
         "vscode-textmate": "^4.0.1"
     }
 }

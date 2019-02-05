@@ -5,6 +5,7 @@ import { MagicPythonDocumentParser } from './parsers/pythonParser';
 import { PhpDocumentParser } from './parsers/phpParser';
 import { getTextMateRegistry, grammarCollection, ITextMateRegistry } from './text-mate';
 import { ISimpleChangeEvent, IParserResult } from './types';
+import { reporter } from './extension';
 
 
 const PARSERS = [MagicPythonDocumentParser, JSDocumentParser, PhpDocumentParser];
@@ -47,6 +48,9 @@ export class LanguageParser {
             this.state = ParserState.ERROR_SCOPE_NOT_FOUND;
             return;
         }
+
+        // Extension supports this language
+        reporter.sendTelemetryEvent('UsedLanguages', {'languageId': languageId});
 
         LanguageParser.registry.loadGrammar(ext.scopeName).then((grammar) => {
             const grammarName:string = (grammar as any)._grammar.name || (grammar as any)._grammar.scopeName;

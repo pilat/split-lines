@@ -22,10 +22,7 @@ before_install:
     fi
 
 install:
-  - npm install --ignore-scripts
-  - rm node_modules/oniguruma/binding.gyp  # We'll use binaries from vscode
-  - npm install
-  - npm run vscode:prepublish
+  - ./scripts/install.sh
 
 script:
   - npm test --silent
