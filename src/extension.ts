@@ -25,9 +25,9 @@ export function activate(context: ExtensionContext) {
     return api
 }
 
-export function deactivate() {
-    if (reporter) {
-        // This will ensure all pending events get flushed
-        reporter.dispose();
-    }
-}
+// export function deactivate() {
+//     if (reporter) {
+//         // This will ensure all pending events get flushed
+//         reporter.dispose();
+//     }
+// }

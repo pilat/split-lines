@@ -1,7 +1,11 @@
-import { SplitLinesProvider } from './../provider';
+import { LanguageParser } from './../src/parser';
+import { SplitLinesProvider } from '../src/provider';
 import * as assert from 'assert';
 import * as vscode from 'vscode';
+import {mock,restore} from 'simple-mock';
+// import {it} from 'mocha';
 import { createRandomFile, deleteFile } from './common';
+import { TextMateRegistry } from '../src/text-mate';
 
 
 const testCases:any = {
@@ -245,6 +249,12 @@ function render() {
             eol: vscode.EndOfLine.CRLF,
             expected: 'In a galaxy \r\nfar far away'
         },
+        {
+            name: 'Boundary punctuation',
+            text: "cll('dasdasdasdas', 'dasdasas')",
+            enterPos: [0, 4],
+            expected: "cll(\n'dasdasdasdas', 'dasdasas')",
+        }
     ],
 
     jsx: [  // JS
@@ -292,7 +302,81 @@ class Hello {
     ]
 };
 
-    
+// delete testCases['php']
+// delete testCases['py']
+// delete testCases['js']
+// delete testCases['jsx']
+
+suite("TextMate Tests", () => {
+    test('get existing grammar w/o error', (done) => {
+        const registry = new TextMateRegistry();
+        registry.loadGrammar('source.js').then(() => done(), () => done('Failed'))
+    }),
+
+    test('get unknown grammar with error', (done) => {
+        const registry = new TextMateRegistry();
+        registry.loadGrammar('source.unknown.name').then(() => done('Failed'), () => done())
+    }),
+
+    test('get existing grammar with error', (done) => {
+        const registry = new TextMateRegistry();
+        let info = registry.getByLanguage('javascript');
+        let oldVal:string = info.extPath
+        info.extPath = 'not-existing-path';
+        registry.loadGrammar('source.js').then(() => {
+            info.extPath = oldVal;
+            done('Failed');
+        }, () => {
+            info.extPath = oldVal;
+            done()
+        })
+    }),
+
+    test('get currupted grammar with error', (done) => {
+        const registry = new TextMateRegistry();
+        mock((registry as any).vsctm, 'parseRawGrammar',  (_, __) => {throw 'err'});
+        registry.loadGrammar('source.js').then(() => {
+            restore();
+            done('Failed');
+        }, () => {
+            restore();
+            done()
+        })
+    })
+})
+
+suite("Parser Tests", () => {
+    test('get parser w/o error', /*(done)*/ async () => {
+        const parser = new LanguageParser('python');
+        await parser.grammarPromise;
+        assert.equal(parser.isReady, true);
+    }),
+    test('get parser w error', /*(done)*/ async () => {
+        const parser = new LanguageParser('java');
+        await parser.grammarPromise;
+        assert.equal(parser.isReady, false);
+    }),
+    test('get parser with error 1', /*(done)*/ async () => {
+        const registry = new TextMateRegistry();
+        mock((registry as any).vsctm, 'parseRawGrammar',  (_, __) => {throw 'err'});
+
+        const parser = new LanguageParser('java', registry);
+        await parser.grammarPromise;
+        restore()
+        assert.equal(parser.isReady, false);
+    }),
+    test('get parser with error 2', /*(done)*/ async () => {
+        const registry = new TextMateRegistry();
+        mock((registry as any), 'loadGrammar',  (_) => new Promise((r) => {r('invalid')}));
+
+        const parser = new LanguageParser('python', registry);
+        await parser.grammarPromise;
+        restore()
+        assert.equal(parser.isReady, false);
+    })
+})
+
+
 suite("Extension Tests", () => {
     test('Base test', async () => {
         // noop
@@ -310,6 +394,12 @@ suite("Extension Tests", () => {
                 const file = await createRandomFile(testCase.text, fileType);
                 const doc = await vscode.workspace.openTextDocument(file);
                 const ed = await vscode.window.showTextDocument(doc);
+                // await sleep(1000)
+
+                // // Await language parsers
+                // const parsers = (myProvider as any).parsers;
+                // let promises = Array.from(parsers).map(([_, v]) =>  v.grammarPromise);
+                // await Promise.all(promises);
 
                 const input = testCase.input || '\n';
                 await ed.edit(builder => {
@@ -331,45 +421,45 @@ suite("Extension Tests", () => {
         }
     }
 
-    for (let pos=10;pos<26;++pos){  // Check boundary issue
-        test(`Multicursor, boundaty check (offset {pos})`, async () => {
-        const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
-        await myExtension.activate();
-        let myProvider:SplitLinesProvider = myExtension.exports.getProvider();
+    // for (let pos=10;pos<26;++pos){  // Check boundary issue
+    //     test(`Multicursor, boundaty check (offset {pos})`, async () => {
+    //     const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
+    //     await myExtension.activate();
+    //     let myProvider:SplitLinesProvider = myExtension.exports.getProvider();
 
-        const doc = await vscode.workspace.openTextDocument({language: 'javascript'});
-        const ed = await vscode.window.showTextDocument(doc);
-        const text = "var a=   '123456789012345';  // 0 - 20\nvar b=   '123456789012345';\n";
-        // const pos = 20;
+    //     const doc = await vscode.workspace.openTextDocument({language: 'javascript'});
+    //     const ed = await vscode.window.showTextDocument(doc);
+    //     const text = "var a=   '123456789012345';  // 0 - 20\nvar b=   '123456789012345';\n";
+    //     // const pos = 20;
 
-        await ed.edit(builder => {
-            //builder.setEndOfLine(testCase.eol || vscode.EndOfLine.LF);  // TODO: New line as a fixture
-            builder.insert(new vscode.Position(0, 0), text);
-        });
+    //     await ed.edit(builder => {
+    //         //builder.setEndOfLine(testCase.eol || vscode.EndOfLine.LF);  // TODO: New line as a fixture
+    //         builder.insert(new vscode.Position(0, 0), text);
+    //     });
         
-        // let newPosition = vscode.Position(0, 20);
-        // ed.selection = new vscode.Selection(0, 20, 0, 20);
-        // await sleep(150);
-        // vscode.commands.executeCommand('editor.action.insertCursorBelow');
-        // await sleep(150);
+    //     // let newPosition = vscode.Position(0, 20);
+    //     // ed.selection = new vscode.Selection(0, 20, 0, 20);
+    //     // await sleep(150);
+    //     // vscode.commands.executeCommand('editor.action.insertCursorBelow');
+    //     // await sleep(150);
 
-        // Press enter
-        //vscode.workspace.applyEdit()
-        await ed.edit(builder => {
-            builder.insert(new vscode.Position(0, pos), "\n");
-            builder.insert(new vscode.Position(1, pos), "\n");
-        });
-        await myProvider.editPromise;
+    //     // Press enter
+    //     //vscode.workspace.applyEdit()
+    //     await ed.edit(builder => {
+    //         builder.insert(new vscode.Position(0, pos), "\n");
+    //         builder.insert(new vscode.Position(1, pos), "\n");
+    //     });
+    //     await myProvider.editPromise;
 
-        // expected value:
-        let actualText = doc.getText();
+    //     // expected value:
+    //     let actualText = doc.getText();
 
-        const expected = text.split('\n').map(line => 
-            line ? line.substr(0, pos) + "' +\n" + ' '.repeat(9) + "'" + line.substr(pos) : ''
-        ).join('\n')
+    //     const expected = text.split('\n').map(line => 
+    //         line ? line.substr(0, pos) + "' +\n" + ' '.repeat(9) + "'" + line.substr(pos) : ''
+    //     ).join('\n')
 
-        assert.equal(actualText, expected);
-        });
-    }
+    //     assert.equal(actualText, expected);
+    //     });
+    // }
 
 });

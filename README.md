@@ -9,6 +9,7 @@
 
 [![Marketplace Version](https://vsmarketplacebadge.apphb.com/version/brainfit.split-lines.svg)](https://marketplace.visualstudio.com/items?itemName=brainfit.split-lines) 
 [![Build Status](https://travis-ci.org/pilat/split-lines.svg?branch=master)](https://travis-ci.org/pilat/split-lines)
+[![codecov](https://codecov.io/gh/pilat/split-lines/branch/master/graph/badge.svg)](https://codecov.io/gh/pilat/split-lines)
 
 ## Splitting Lines With String Literals
 

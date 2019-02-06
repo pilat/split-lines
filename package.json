@@ -36,6 +36,11 @@
             "url": "https://travis-ci.org/pilat/split-lines.svg?branch=master",
             "href": "https://travis-ci.org/pilat/split-lines",
             "description": "Travis-CI"
+        },
+        {
+            "url": "https://codecov.io/gh/pilat/split-lines/branch/master/graph/badge.svg",
+            "href": "https://codecov.io/gh/pilat/split-lines",
+            "description": "codecov"
         }
     ],
     "homepage": "https://github.com/pilat/split-lines/blob/master/README.md",
@@ -47,7 +52,7 @@
         "onLanguage:python",
         "onLanguage:php"
     ],
-    "main": "./out/extension.js",
+    "main": "./out/src/extension.js",
     "contributes": {
         "commands": []
     },
@@ -59,9 +64,16 @@
         "test": "node ./node_modules/vscode/bin/test"
     },
     "devDependencies": {
+        "@types/glob": "^5.0.30",
         "@types/mocha": "^5.2.5",
         "@types/node": "^10.12.18",
+        "@types/simple-mock": "^0.8.1",
+        "decache": "^4.1.0",
+        "glob": "^7.1.1",
+        "istanbul": "^0.4.5",
         "mocha": "^5.2.0",
+        "remap-istanbul": "^0.13.0",
+        "simple-mock": "^0.8.0",
         "tslint": "^5.12.1",
         "typescript": "^3.3.1",
         "typescript-tslint-plugin": "^0.3.1",

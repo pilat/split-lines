@@ -3,7 +3,7 @@ import { TextEditorEdit } from 'vscode';
 import { JSDocumentParser } from './parsers/jsParser';
 import { MagicPythonDocumentParser } from './parsers/pythonParser';
 import { PhpDocumentParser } from './parsers/phpParser';
-import { getTextMateRegistry, grammarCollection, ITextMateRegistry } from './text-mate';
+import { TextMateRegistry } from './text-mate';
 import { ISimpleChangeEvent, IParserResult } from './types';
 import { reporter } from './extension';
 
@@ -22,17 +22,15 @@ export enum ParserState {
 export class LanguageParser {
     // LanguageParser will be created for each language
     
-    static registry: ITextMateRegistry;
     static parsers: Map<string, any> = new Map();
 
     private state: ParserState = ParserState.INIT;
+    private registry: TextMateRegistry;
     private parser: DocumentParser | undefined;
+    public grammarPromise: Promise<any> = Promise.resolve(true); // For tests purpose;
 
-    constructor(languageId: string) {
-        // Init registry
-        if (!LanguageParser.registry) {
-            LanguageParser.registry = getTextMateRegistry();
-        }
+    constructor(languageId: string, registry?: TextMateRegistry) {
+        this.registry = registry || TextMateRegistry.getInstance();
 
         // Register all parsers
         if (LanguageParser.parsers.size === 0) {
@@ -43,19 +41,23 @@ export class LanguageParser {
             }
         }
 
-        const ext = grammarCollection.getByLanguage(languageId);
+        const ext = this.registry.getByLanguage(languageId);
         if (!ext) {
             this.state = ParserState.ERROR_SCOPE_NOT_FOUND;
             return;
         }
 
         // Extension supports this language
-        reporter.sendTelemetryEvent('UsedLanguages', {'languageId': languageId});
+        if (reporter) {
+            reporter.sendTelemetryEvent('UsedLanguages', {'languageId': languageId});
+        }
 
-        LanguageParser.registry.loadGrammar(ext.scopeName).then((grammar) => {
-            const grammarName:string = (grammar as any)._grammar.name || (grammar as any)._grammar.scopeName;
+        this.grammarPromise = this.registry.loadGrammar(ext.scopeName).then((grammar) => {
+            const _grammar:any = (grammar as any)._grammar;
+            const grammarName:string = _grammar ? _grammar.name || _grammar.scopeName : null;
             if (!grammarName) {
                 this.state = ParserState.ERROR_GRAMMAR_NOT_FOUND;
+                return;
             }
 
             if (!LanguageParser.parsers.has(grammarName)) {
