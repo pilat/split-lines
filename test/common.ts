@@ -1,14 +1,12 @@
-/*---------------------------------------------------------------------------------------------
- *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
- *--------------------------------------------------------------------------------------------*/
-
-'use strict';
-
 import * as vscode from 'vscode';
+
 import * as fs from 'fs';
 import * as os from 'os';
 import { join } from 'path';
+import { SplitLinesProvider } from '../src/provider';
+import * as assert from 'assert';
+import { LanguageParser } from '../src/parser';
+
 
 function rndName() {
     return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10);
@@ -54,4 +52,34 @@ export function closeAllEditors() {
 
 export function sleep(ms:number) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+export async function applyEditCase(fileType: string, text: string, expected: string,
+    position: [number, number], input?: string, eol?: vscode.EndOfLine) {
+    const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
+    await myExtension.activate();
+    let myProvider: SplitLinesProvider = myExtension.exports.getProvider();
+
+    const file = await createRandomFile(text, fileType);
+    const doc = await vscode.workspace.openTextDocument(file);
+    const ed = await vscode.window.showTextDocument(doc);
+
+    // wait slow parsers
+    const allParsers: LanguageParser[] = Array.from((myProvider as any).parsers.values());
+    const grammarsPromises = allParsers.map(o => o.grammarPromise);
+    await Promise.all(grammarsPromises);
+
+    input = input || '\n';
+    await ed.edit(builder => {
+        builder.setEndOfLine(eol || vscode.EndOfLine.LF);
+        builder.insert(new vscode.Position(position[0], position[1]), input);
+    })
+    await myProvider.editPromise;
+    
+    let actualText = doc.getText();
+    assert.equal(actualText, expected);
+    
+    await vscode.commands.executeCommand('workbench.action.closeActiveEditor');
+    await deleteFile(file);
 }

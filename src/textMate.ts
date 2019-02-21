@@ -26,7 +26,7 @@ interface IVirtualVsctm {
 }
 
 export class TextMateRegistry {
-    private _lang2Scope: Map<string, IGrammarCandidate> = new Map();  // languageId -> 1st scope
+    private _lang2Scope: Map<string, string> = new Map();  // languageId -> 1st scope
     private _scope2Candidate: Map<string, IGrammarCandidate> = new Map();  // scopeName -> candidate
     private _registry: Registry;
     private static instance: TextMateRegistry;
@@ -120,8 +120,16 @@ export class TextMateRegistry {
         if (!gram.url || gram.path) {
             throw new Error();
         }
+
         // get to temp
-        const path_: string = path.join(os.tmpdir(), 'split-lines.extension', 'grammars', gram.scopeName);
+        const tempdir = os.tmpdir();
+        try {
+            fs.mkdirSync(tempdir);
+        } catch(e) {
+            // noop
+        }
+
+        const path_: string = path.join(tempdir, `temp-gram-${gram.scopeName}.json`);
         if (!fs.existsSync(path_)) {
             const content = await download(gram.url)
             await writeFile(path_, content);
