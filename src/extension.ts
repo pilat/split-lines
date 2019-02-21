@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { SplitLines } from './split-lines';
+import { SplitLines } from './splitLines';
 import { SplitLinesProvider } from './provider';
 import { ExtensionContext } from 'vscode';
 import { TelemetryReporter } from './telemetry';

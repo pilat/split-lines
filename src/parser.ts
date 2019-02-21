@@ -3,7 +3,7 @@ import { TextEditorEdit } from 'vscode';
 import { JSDocumentParser } from './parsers/jsParser';
 import { MagicPythonDocumentParser } from './parsers/pythonParser';
 import { PhpDocumentParser } from './parsers/phpParser';
-import { TextMateRegistry } from './text-mate';
+import { TextMateRegistry } from './textMate';
 import { ISimpleChangeEvent, IParserResult } from './types';
 import { reporter } from './extension';
 
@@ -14,7 +14,6 @@ const PARSERS = [MagicPythonDocumentParser, JSDocumentParser, PhpDocumentParser]
 export enum ParserState {
     INIT = 'init',
     READY = 'ready',
-    ERROR_SCOPE_NOT_FOUND = 'scope_not_found',
     ERROR_PARSER_NOT_FOUND = 'parser_not_found',
     ERROR_GRAMMAR_NOT_FOUND = 'grammar_not_found'
 }
@@ -41,18 +40,7 @@ export class LanguageParser {
             }
         }
 
-        const ext = this.registry.getByLanguage(languageId);
-        if (!ext) {
-            this.state = ParserState.ERROR_SCOPE_NOT_FOUND;
-            return;
-        }
-
-        // Extension supports this language
-        if (reporter) {
-            reporter.sendTelemetryEvent('UsedLanguages', {'languageId': languageId});
-        }
-
-        this.grammarPromise = this.registry.loadGrammar(ext.scopeName).then((grammar) => {
+        this.grammarPromise = this.registry.loadGrammar(languageId).then((grammar) => {
             const _grammar:any = (grammar as any)._grammar;
             const grammarName:string = _grammar ? _grammar.name || _grammar.scopeName : null;
             if (!grammarName) {
@@ -66,6 +54,12 @@ export class LanguageParser {
                 const parser = LanguageParser.parsers.get(grammarName);
                 this.parser = new parser(grammar);
                 this.state = ParserState.READY;
+
+
+                // Extension supports this language
+                if (reporter) {
+                    reporter.sendTelemetryEvent('UsedLanguages', {'languageId': languageId});
+                }
             }
         }, () => {
             this.state = ParserState.ERROR_GRAMMAR_NOT_FOUND;

@@ -5,7 +5,7 @@ import * as vscode from 'vscode';
 import {mock,restore} from 'simple-mock';
 // import {it} from 'mocha';
 import { createRandomFile, deleteFile } from './common';
-import { TextMateRegistry } from '../src/text-mate';
+import { TextMateRegistry } from '../src/textMate';
 
 
 const testCases:any = {
@@ -306,28 +306,26 @@ class Hello {
 // delete testCases['py']
 // delete testCases['js']
 // delete testCases['jsx']
+// delete testCases['ts']
+
 
 suite("TextMate Tests", () => {
     test('get existing grammar w/o error', (done) => {
         const registry = new TextMateRegistry();
-        registry.loadGrammar('source.js').then(() => done(), () => done('Failed'))
+        registry.loadGrammar('javascript').then(() => done(), () => done('Failed'))
     }),
 
     test('get unknown grammar with error', (done) => {
         const registry = new TextMateRegistry();
-        registry.loadGrammar('source.unknown.name').then(() => done('Failed'), () => done())
+        registry.loadGrammar('unknownLanguage').then(() => done('Failed'), () => done())
     }),
 
     test('get existing grammar with error', (done) => {
         const registry = new TextMateRegistry();
-        let info = registry.getByLanguage('javascript');
-        let oldVal:string = info.extPath
-        info.extPath = 'not-existing-path';
-        registry.loadGrammar('source.js').then(() => {
-            info.extPath = oldVal;
+        registry.addGrammar('javascript', 'source.js', 'not-existing-path', undefined, true);  // replace existing
+        registry.loadGrammar('javascript').then(() => {
             done('Failed');
         }, () => {
-            info.extPath = oldVal;
             done()
         })
     }),
@@ -335,7 +333,7 @@ suite("TextMate Tests", () => {
     test('get currupted grammar with error', (done) => {
         const registry = new TextMateRegistry();
         mock((registry as any).vsctm, 'parseRawGrammar',  (_, __) => {throw 'err'});
-        registry.loadGrammar('source.js').then(() => {
+        registry.loadGrammar('javascript').then(() => {
             restore();
             done('Failed');
         }, () => {
@@ -421,45 +419,45 @@ suite("Extension Tests", () => {
         }
     }
 
-    // for (let pos=10;pos<26;++pos){  // Check boundary issue
-    //     test(`Multicursor, boundaty check (offset {pos})`, async () => {
-    //     const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
-    //     await myExtension.activate();
-    //     let myProvider:SplitLinesProvider = myExtension.exports.getProvider();
+    for (let pos=10;pos<26;++pos){  // Check boundary issue
+        test(`Multicursor, boundaty check (offset {pos})`, async () => {
+        const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
+        await myExtension.activate();
+        let myProvider:SplitLinesProvider = myExtension.exports.getProvider();
 
-    //     const doc = await vscode.workspace.openTextDocument({language: 'javascript'});
-    //     const ed = await vscode.window.showTextDocument(doc);
-    //     const text = "var a=   '123456789012345';  // 0 - 20\nvar b=   '123456789012345';\n";
-    //     // const pos = 20;
+        const doc = await vscode.workspace.openTextDocument({language: 'javascript'});
+        const ed = await vscode.window.showTextDocument(doc);
+        const text = "var a=   '123456789012345';  // 0 - 20\nvar b=   '123456789012345';\n";
+        // const pos = 20;
 
-    //     await ed.edit(builder => {
-    //         //builder.setEndOfLine(testCase.eol || vscode.EndOfLine.LF);  // TODO: New line as a fixture
-    //         builder.insert(new vscode.Position(0, 0), text);
-    //     });
+        await ed.edit(builder => {
+            //builder.setEndOfLine(testCase.eol || vscode.EndOfLine.LF);  // TODO: New line as a fixture
+            builder.insert(new vscode.Position(0, 0), text);
+        });
         
-    //     // let newPosition = vscode.Position(0, 20);
-    //     // ed.selection = new vscode.Selection(0, 20, 0, 20);
-    //     // await sleep(150);
-    //     // vscode.commands.executeCommand('editor.action.insertCursorBelow');
-    //     // await sleep(150);
+        // let newPosition = vscode.Position(0, 20);
+        // ed.selection = new vscode.Selection(0, 20, 0, 20);
+        // await sleep(150);
+        // vscode.commands.executeCommand('editor.action.insertCursorBelow');
+        // await sleep(150);
 
-    //     // Press enter
-    //     //vscode.workspace.applyEdit()
-    //     await ed.edit(builder => {
-    //         builder.insert(new vscode.Position(0, pos), "\n");
-    //         builder.insert(new vscode.Position(1, pos), "\n");
-    //     });
-    //     await myProvider.editPromise;
+        // Press enter
+        //vscode.workspace.applyEdit()
+        await ed.edit(builder => {
+            builder.insert(new vscode.Position(0, pos), "\n");
+            builder.insert(new vscode.Position(1, pos), "\n");
+        });
+        await myProvider.editPromise;
 
-    //     // expected value:
-    //     let actualText = doc.getText();
+        // expected value:
+        let actualText = doc.getText();
 
-    //     const expected = text.split('\n').map(line => 
-    //         line ? line.substr(0, pos) + "' +\n" + ' '.repeat(9) + "'" + line.substr(pos) : ''
-    //     ).join('\n')
+        const expected = text.split('\n').map(line => 
+            line ? line.substr(0, pos) + "' +\n" + ' '.repeat(9) + "'" + line.substr(pos) : ''
+        ).join('\n')
 
-    //     assert.equal(actualText, expected);
-    //     });
-    // }
+        assert.equal(actualText, expected);
+        });
+    }
 
 });
