@@ -2,7 +2,7 @@
     "name": "split-lines",
     "displayName": "Split Lines",
     "description": "Splitting Lines With String Literals",
-    "version": "0.0.17",
+    "version": "1.0.0",
     "icon": "images/icon.png",
     "publisher": "brainfit",
     "author": {
@@ -51,7 +51,8 @@
         "onLanguage:typescriptreact",
         "onLanguage:python",
         "onLanguage:php",
-        "onLanguage:dart"
+        "onLanguage:dart",
+        "onLanguage:java"
     ],
     "main": "./out/src/extension.js",
     "contributes": {

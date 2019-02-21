@@ -20,6 +20,8 @@ A Visual Studio Code extension allow split string literals, providing the correc
 - Python
 - TypeScript
 - JavaScript
+- Java
+- PHP
 - Dart
 
 

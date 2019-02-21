@@ -2,7 +2,7 @@ import { applyEditCase } from "./common";
 import { TextMateRegistry } from "../src/textMate";
 
 
-suite("Dart Parser Test", () => {
+suite("Dart Language Parser Test", () => {
     setup(async () => {
         const tm = TextMateRegistry.getInstance();
         tm.addGrammar('plaintext', 'source.dart', undefined, // dart

@@ -4,7 +4,6 @@ import { TextEditorEdit } from 'vscode';
 
 
 interface IPhpResolveResult {
-    isInString: boolean;
     openQuoteCharacter: string;
     margin: number;
 }
@@ -25,8 +24,8 @@ export class PhpDocumentParser extends DocumentParser {
         }
 
         // backward search for detect quote character(s)
-        const startQuoteFragment = [...prevFragments].reverse().find(i => 
-            i.isScope(/^punctuation\.definition\.string\.begin(\.php)$/));
+        const startQuoteFragment = [...prevFragments].reverse().find(
+            (i) => i.isScope(/^punctuation\.definition\.string\.begin(\.php)$/));
         if (!startQuoteFragment) {
             return;
         }
@@ -35,7 +34,7 @@ export class PhpDocumentParser extends DocumentParser {
         const openQuoteCharacter:string = startQuoteFragment.text;
         margin = startQuoteFragment.startIndex;
 
-        return {isInString, openQuoteCharacter, margin};
+        return {openQuoteCharacter, margin};
     }
 
     public edit(editBuilder:TextEditorEdit, item:IParserResult):number {

@@ -4,7 +4,6 @@ import { TextEditorEdit } from 'vscode';
 
 
 interface IPythonResolveResult {
-    isInString: boolean;
     isInList: boolean;
     openQuoteCharacter: string;
     margin: number;
@@ -43,8 +42,8 @@ export class MagicPythonDocumentParser extends DocumentParser {
         // backward search adn detect quote character(s)
         let openQuoteCharacter = null;
         let margin = 0;
-        const startQuoteFragment = [...prevFragments].reverse().find(i => 
-            i.isScope('punctuation.definition.string.begin.python'));
+        const startQuoteFragment = [...prevFragments].reverse().find(
+            (i) => i.isScope('punctuation.definition.string.begin.python'));
         
         if (startQuoteFragment) {
             openQuoteCharacter = startQuoteFragment.text;
@@ -58,7 +57,7 @@ export class MagicPythonDocumentParser extends DocumentParser {
             return;
         }
         
-        return {isInString, isInList, openQuoteCharacter, margin};
+        return {isInList, openQuoteCharacter, margin};
     }
 
     // public edit(editBuilder:TextEditorEdit, originalPosition:Position, newPosition:Position, result:IPythonResolveResult): void {

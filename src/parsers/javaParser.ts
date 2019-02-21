@@ -3,29 +3,29 @@ import { DocumentParser, LineFragment } from './common';
 import { TextEditorEdit } from 'vscode';
 
 
-interface IJSResolveResult {
+interface IJavaResolveResult {
     openQuoteCharacter: string;
     margin: number;
 }
 
 
-export class JSDocumentParser extends DocumentParser {
-    public static SUPPORTED_GRAMMARS = ['JavaScript (with React support)', 'TypeScript', 'TypeScriptReact'];
+export class JavaDocumentParser extends DocumentParser {
+    public static SUPPORTED_GRAMMARS = ['Java', 'source.java'];
 
-    public resolve(fragment:LineFragment, prevFragments:LineFragment[]): IJSResolveResult | undefined {
-        const isInString:boolean = fragment.hasScope(/^string\.quoted\.(single|double)(\.js(\.jsx)?|\.tsx?)$/);
+    public resolve(fragment:LineFragment, prevFragments:LineFragment[]): IJavaResolveResult | undefined {
+        const isInString:boolean = fragment.hasScope(/^string\.quoted\.(single|double)(\.java)$/);
         
         if (!isInString) {
             return;
         }
         
-        if (fragment.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.tsx?)$/)) {
+        if (fragment.isScope(/^punctuation\.definition\.string\.begin(\.java)$/)) {
             return;
         }
 
         // backward search for detect quote character(s)
         const startQuoteFragment = [...prevFragments].reverse().find(
-            (i) => i.isScope(/^punctuation\.definition\.string\.begin(\.js(\.jsx)?|\.tsx?)$/));
+            (i) => i.isScope(/^punctuation\.definition\.string\.begin(\.java)$/));
         if (!startQuoteFragment) {
             return;
         }
@@ -39,7 +39,7 @@ export class JSDocumentParser extends DocumentParser {
 
     public edit(editBuilder:TextEditorEdit, item:IParserResult):number {
         const { originalPosition, newPosition } = item.event;
-        const result = item.result as IJSResolveResult;
+        const result = item.result as IJavaResolveResult;
 
         editBuilder.insert(originalPosition, result.openQuoteCharacter + ' +');
         

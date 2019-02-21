@@ -2,7 +2,7 @@ import { applyEditCase } from "./common";
 import { EndOfLine } from "vscode";
 
 
-suite("JS Parser Test", () => {
+suite("JavaScript Language Parser Test", () => {
     test('Basic', async () => {
         const text = `var a = "Blabl bla"`;
         const expected = `
@@ -91,7 +91,7 @@ function render() {
 });
 
 
-suite("JSX Parser Test", () => {
+suite("JSX Language Parser Test", () => {
     test('Basic', async () => {
         const text = 'let component = <ReactComponent value1="The string one two" />;';
         const expected = `
@@ -102,7 +102,7 @@ let component = <ReactComponent value1="The string " +
 });
 
 
-suite("TypeScript Parser Test", () => {
+suite("TypeScript Language Parser Test", () => {
     test('Basic', async () => {
         const text = 'let a:string = "Blabl bla"';
         const expected = `

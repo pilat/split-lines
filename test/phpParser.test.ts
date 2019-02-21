@@ -1,7 +1,7 @@
 import { applyEditCase } from "./common";
 
 
-suite("PhpParser Test", () => {
+suite("Php Language Parser Test", () => {
     test('Align and concatenation', async () => {
         const text = `<?php
 

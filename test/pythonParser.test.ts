@@ -1,7 +1,7 @@
 import { applyEditCase } from "./common";
 
 
-suite("Python Parser Test", () => {
+suite("Python Language Parser Test", () => {
     test('Test with double quotes', async () => {
         const text = `a = "Long string test"`;
         const expected = `

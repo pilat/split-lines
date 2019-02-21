@@ -10,20 +10,23 @@ suite("Parser Tests", () => {
         await parser.grammarPromise;
         assert.equal(parser.isReady, true);
     }),
+
     test('get parser w error', /*(done)*/ async () => {
-        const parser = new LanguageParser('java');
+        const parser = new LanguageParser('unknownLanguage');
         await parser.grammarPromise;
         assert.equal(parser.isReady, false);
     }),
+
     test('get parser with error 1', /*(done)*/ async () => {
         const registry = new TextMateRegistry();
         mock((registry as any).vsctm, 'parseRawGrammar',  (_, __) => {throw 'err'});
 
-        const parser = new LanguageParser('java', registry);
+        const parser = new LanguageParser('unknownLanguage', registry);
         await parser.grammarPromise;
         restore()
         assert.equal(parser.isReady, false);
     }),
+
     test('get parser with error 2', /*(done)*/ async () => {
         const registry = new TextMateRegistry();
         mock((registry as any), 'loadGrammar',  (_) => new Promise((r) => {r('invalid')}));
