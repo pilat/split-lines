@@ -6,9 +6,10 @@ import { PhpDocumentParser } from './parsers/phpParser';
 import { TextMateRegistry } from './textMate';
 import { ISimpleChangeEvent, IParserResult } from './types';
 import { reporter } from './extension';
+import { DartDocumentParser } from './parsers/dartParser';
 
 
-const PARSERS = [MagicPythonDocumentParser, JSDocumentParser, PhpDocumentParser];
+const PARSERS = [MagicPythonDocumentParser, JSDocumentParser, PhpDocumentParser, DartDocumentParser];
 
 
 export enum ParserState {

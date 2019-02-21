@@ -13,7 +13,16 @@
 
 ## Splitting Lines With String Literals
 
-A Visual Studio Code extension allow split string literals, providing the correct syntax. Now supports **Python**, **TypeScript**, **JavaScript**.
+A Visual Studio Code extension allow split string literals, providing the correct syntax.
+
+
+## Supported languages
+- Python
+- TypeScript
+- JavaScript
+- Dart
+
+
 
 ### Just press <kbd>Enter</kbd> when cursor located in string expression and string will be split!
 
@@ -22,12 +31,6 @@ A Visual Studio Code extension allow split string literals, providing the correc
 
 ![Demo](https://github.com/pilat/split-lines/blob/master/images/demo-python.gif?raw=true)
 
-
-
-## Supported languages
-- Python
-- TypeScript
-- JavaScript
 
 
 ## License 

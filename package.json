@@ -50,7 +50,8 @@
         "onLanguage:typescript",
         "onLanguage:typescriptreact",
         "onLanguage:python",
-        "onLanguage:php"
+        "onLanguage:php",
+        "onLanguage:dart"
     ],
     "main": "./out/src/extension.js",
     "contributes": {
