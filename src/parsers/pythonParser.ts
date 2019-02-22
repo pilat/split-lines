@@ -1,5 +1,6 @@
 import { IParserResult } from './../types';
-import { DocumentParser, LineFragment } from './common';
+import { DocumentParser } from './common/documentParser';
+import { LineFragment } from './common/lineFragment';
 import { TextEditorEdit } from 'vscode';
 
 

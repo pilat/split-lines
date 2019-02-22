@@ -16,6 +16,6 @@ export class SplitLines implements Disposable {
     }
 
     public dispose() {
-        this.disposables.forEach(disposable => disposable.dispose());
+        this.disposables.forEach((disposable) => disposable.dispose());
     }
 }

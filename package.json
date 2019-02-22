@@ -60,17 +60,19 @@
     },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
-        "compile": "tsc -watch -p ./",
+        "compile": "tsc -p ./",
         "postinstall": "node ./node_modules/vscode/bin/install",
         "watch": "tsc -watch -p ./",
-        "test": "node ./node_modules/vscode/bin/test"
+        "test": "CODE_DISABLE_EXTENSIONS=1 node ./node_modules/vscode/bin/test",
+        "lint": "tslint './src/**/*.ts' './test/*.ts'",
+        "pretty": "tslint --fix './src/**/*.ts'"
     },
     "devDependencies": {
         "@types/glob": "^7.1.1",
         "@types/mocha": "^5.2.5",
         "@types/node": "^11.9.4",
         "@types/simple-mock": "^0.8.1",
-        "decache": "^4.1.0",
+        "decache": "^4.5.1",
         "glob": "^7.1.1",
         "istanbul": "^0.4.5",
         "mocha": "^6.0.0",

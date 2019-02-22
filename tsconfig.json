@@ -17,6 +17,13 @@
         { "name": "typescript-tslint-plugin" }
       ]
   },
+  "typeRoots": [
+    "./node_modules/@types"
+  ],
+  "types": [
+    "node",
+    "mocha"
+  ],
   "exclude":[
     "node_modules",
     ".vscode-test",

@@ -117,10 +117,6 @@ export class TextMateRegistry {
     }
 
     private async _downloadGrammar(gram: IGrammarCandidate) {
-        if (!gram.url || gram.path) {
-            throw new Error();
-        }
-
         // get to temp
         const tempdir = os.tmpdir();
         try {

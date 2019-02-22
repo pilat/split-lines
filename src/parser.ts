@@ -1,4 +1,4 @@
-import { DocumentParser } from './parsers/common';
+import { DocumentParser } from './parsers/common/documentParser';
 import { TextEditorEdit } from 'vscode';
 import { JSDocumentParser } from './parsers/jsParser';
 import { MagicPythonDocumentParser } from './parsers/pythonParser';
@@ -10,7 +10,8 @@ import { DartDocumentParser } from './parsers/dartParser';
 import { JavaDocumentParser } from './parsers/javaParser';
 
 
-const PARSERS = [MagicPythonDocumentParser, JSDocumentParser, PhpDocumentParser, DartDocumentParser, JavaDocumentParser];
+const PARSERS = [MagicPythonDocumentParser, JSDocumentParser, PhpDocumentParser,
+    DartDocumentParser, JavaDocumentParser];
 
 
 export enum ParserState {

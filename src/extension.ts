@@ -5,7 +5,7 @@ import { ExtensionContext } from 'vscode';
 import { TelemetryReporter } from './telemetry';
 
 
-export let reporter:TelemetryReporter;
+export let reporter: TelemetryReporter;
 
 export function activate(context: ExtensionContext) {
     const packageInfo = require(join(context.extensionPath, 'package.json'));
@@ -17,17 +17,10 @@ export function activate(context: ExtensionContext) {
 
     const api = {
         getProvider() {
-            return provider
-        }
-    }
+            return provider;
+        },
+    };
 
     // 'export' public api-surface. For test purpose basically
-    return api
+    return api;
 }
-
-// export function deactivate() {
-//     if (reporter) {
-//         // This will ensure all pending events get flushed
-//         reporter.dispose();
-//     }
-// }

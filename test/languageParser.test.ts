@@ -1,6 +1,6 @@
 import { LanguageParser } from './../src/parser';
 import * as assert from 'assert';
-import {mock,restore} from 'simple-mock';
+import {mock, restore} from 'simple-mock';
 import { TextMateRegistry } from '../src/textMate';
 
 
@@ -19,7 +19,8 @@ suite("Parser Tests", () => {
 
     test('get parser with error 1', /*(done)*/ async () => {
         const registry = new TextMateRegistry();
-        mock((registry as any).vsctm, 'parseRawGrammar',  (_, __) => {throw 'err'});
+        // @ts-ignore Access o private
+        mock(registry.vsctm, 'parseRawGrammar',  (_, __) => {throw 'err'});
 
         const parser = new LanguageParser('unknownLanguage', registry);
         await parser.grammarPromise;
