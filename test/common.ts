@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import { LanguageParser } from '../src/parser';
 
 
-function rndName() {
+export function rndName() {
     return Math.random().toString(36).replace(/[^a-z]+/g, '').substr(0, 10);
 }
 

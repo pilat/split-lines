@@ -4,14 +4,14 @@ import * as vscode from 'vscode';
 import { closeAllEditors } from './common';
 
 
-suite("Extension Tests", () => {
+suite("Multicursor boundary tests", () => {
     teardown(async () => {
         await closeAllEditors();
     })
     // todo: test with overtype plugins like this https://marketplace.visualstudio.com/items?itemName=adammaras.overtype
 
     for (let pos=10;pos<26;++pos){  // Check boundary issue
-        test(`Multicursor, boundaty issue. Check with offset ${pos}`, async () => {
+        test(`Check with offset ${pos}`, async () => {
         const myExtension = vscode.extensions.getExtension('brainfit.split-lines');
         await myExtension.activate();
         let myProvider:SplitLinesProvider = myExtension.exports.getProvider();
