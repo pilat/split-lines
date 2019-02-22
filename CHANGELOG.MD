@@ -1,5 +1,8 @@
 Changelog
 =========
+### 1.0.1
+-  Dart and Java support
+
 ### 0.0.17
 -  Bugfixes, multi-cursor support
 -  PHP experimental support
