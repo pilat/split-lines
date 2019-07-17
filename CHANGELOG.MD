@@ -1,5 +1,8 @@
 Changelog
 =========
+### 1.0.2
+-  Dependencies were upgraded
+
 ### 1.0.1
 -  Dart and Java support
 
