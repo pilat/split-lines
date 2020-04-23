@@ -81,7 +81,7 @@
         "tslint": "^5.18.0",
         "typescript": "^3.5.3",
         "typescript-tslint-plugin": "^0.5.4",
-        "vscode": "^1.1.33"
+        "vscode": "^1.1.37"
     },
     "dependencies": {
         "vscode-extension-telemetry": "^0.1.2",
