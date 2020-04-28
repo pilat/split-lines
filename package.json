@@ -84,7 +84,7 @@
         "vscode": "^1.1.33"
     },
     "dependencies": {
-        "vscode-extension-telemetry": "^0.1.2",
+        "vscode-extension-telemetry": "^0.1.4",
         "vscode-textmate": "^4.2.2"
     }
 }
